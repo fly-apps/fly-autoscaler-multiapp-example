@@ -1,0 +1,15 @@
+app = "fly-autoscaler-multiapp-scaler"
+
+[build]
+image = "flyio/fly-autoscaler:0.2"
+
+[env]
+FAS_APP_NAME = "fly-autoscaler-multiapp-*"
+FAS_CREATED_MACHINE_COUNT = "connection_count / 5"
+FAS_PROMETHEUS_ADDRESS = "https://api.fly.io/prometheus/fly-autoscaler-multiapp-example"
+FAS_PROMETHEUS_METRIC_NAME = "connection_count"
+FAS_PROMETHEUS_QUERY = "sum(connection_count)"
+
+[metrics]
+port = 9090
+path = "/metrics"

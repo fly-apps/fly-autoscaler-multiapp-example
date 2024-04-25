@@ -1,0 +1,5 @@
+app = "fly-autoscaler-multiapp-2"
+
+[metrics]
+port = 9090
+path = "/metrics"
