@@ -1,7 +1,7 @@
 app = "fly-autoscaler-multiapp-scaler"
 
 [build]
-image = "flyio/fly-autoscaler:pr-28"
+image = "flyio/fly-autoscaler:0.3"
 
 [env]
 FAS_ORG = "fly-autoscaler-example"
