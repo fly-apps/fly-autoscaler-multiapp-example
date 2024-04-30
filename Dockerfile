@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM golang:1.22 AS builder
 COPY . .
 RUN go build \
@@ -8,5 +10,5 @@ RUN go build \
 
 FROM alpine
 COPY --from=builder /usr/local/bin/fly-autoscaler-multiapp /usr/local/bin/fly-autoscaler-multiapp
-CMD fly-autoscaler-multiapp
+CMD fly-autoscaler-multiapp -addr :80 -metrics-addr :9090
 

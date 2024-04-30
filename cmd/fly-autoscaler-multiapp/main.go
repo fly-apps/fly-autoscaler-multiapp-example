@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -14,7 +15,10 @@ import (
 
 func main() {
 	addr := flag.String("addr", "localhost:8080", "bind address")
+	metricsAddr := flag.String("metrics-addr", "localhost:9090", "prometheus metrics bind address")
 	flag.Parse()
+
+	go func() { _ = http.ListenAndServe(*metricsAddr, promhttp.Handler()) }()
 
 	slog.Info("starting http server", slog.String("addr", *addr))
 	if err := http.ListenAndServe(*addr, &Handler{}); err != nil {
@@ -30,15 +34,13 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.handleIndex(w, r)
 	case "/connect":
 		h.handleConnect(w, r)
-	case "/metrics":
-		promhttp.Handler().ServeHTTP(w, r)
 	default:
 		http.NotFound(w, r)
 	}
 }
 
 func (h *Handler) handleIndex(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(`Welcome to the fly-autoscaler-multiapp-example!`))
+	fmt.Fprintln(w, os.Getenv("FLY_APP_NAME"))
 }
 
 func (h *Handler) handleConnect(w http.ResponseWriter, r *http.Request) {
@@ -48,8 +50,7 @@ func (h *Handler) handleConnect(w http.ResponseWriter, r *http.Request) {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
-	timer := time.NewTimer(10 * time.Second)
-	defer timer.Stop()
+	w.WriteHeader(http.StatusOK)
 
 	for {
 		fmt.Fprintln(w, time.Now().UTC().Format(time.RFC3339))
@@ -57,8 +58,6 @@ func (h *Handler) handleConnect(w http.ResponseWriter, r *http.Request) {
 
 		select {
 		case <-r.Context().Done():
-			return
-		case <-timer.C:
 			return
 		case <-ticker.C:
 		}

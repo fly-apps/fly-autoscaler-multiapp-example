@@ -1,5 +1,10 @@
-app = "fly-autoscaler-multiapp-0"
+app = "fly-autoscaler-multiapp-app-0"
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  min_machines_running = 1
 
 [metrics]
-port = 9090
-path = "/metrics"
+  port = 9090
+  path = "/metrics"
